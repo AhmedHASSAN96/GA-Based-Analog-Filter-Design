@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -6,15 +7,25 @@ public class GA {
 	Population population;
 	Filter bestResult = null;
 	double maxError;
-	int numOfBest = 5000;
-	double wc;
-//	Filter[] bests;
-
-	public GA(int noOfItr) throws CloneNotSupportedException {
+	int numOfBest = 500;
+	
+	double wc = 10000;
+	double q1 = 1/0.7654;
+	double q2 = 1/1.8478;
+	
+	ArrayList<Filter> BestFilters = new ArrayList<>();
+	double[] mean  = new double[4];
+	double[] StDev = new double[4];
+	double[] MES = new double[4];
+	
+	int iteration = 0;
+	
+	public GA(int iteration) throws CloneNotSupportedException {
 		//initialization & evaluation
-		population = new Population(10000);
+		this.iteration = iteration;
+		population = new Population(1000);
 		
-		for (int j = 0;  j < noOfItr  /*bestResult==null ||bestResult.fitness() > 0.01*/; j++) {
+		for (int j = 0; /* j < iteration*/  bestResult==null ||bestResult.fitness() > 0.001; j++) {
 					
 			//selection
 			Arrays.sort(population.filterPopulation);
@@ -35,16 +46,22 @@ public class GA {
 			
 			//fitness
 			Arrays.sort(population.filterPopulation);
+			BestFilters.add(population.filterPopulation[0]);
 
+			//getbest
 			if(bestResult.fitness() > population.filterPopulation[0].fitness()) {
 				bestResult = (Filter) population.filterPopulation[0].clone();
 			}
-			//getbest
 
-			System.out.println("itr " + j + ", best error: " + population.filterPopulation[0].fitness() + ", best of all: " + bestResult.fitness());
+
+			System.out.println("itr " + j + ", best error: " + ", best of all: " + bestResult.fitness());
 			
 			population.newGeneration(numOfBest);
 		}
+		
+		updateMean();
+		updateStDev();
+		updateMES();
 	}
 	
 	public void crossOver(Filter f1, Filter f2) {
@@ -155,5 +172,49 @@ public class GA {
 		double deltaQ  = Math.abs(  (1/0.7654) - ( 1 / (wc1*(R1+R2)*C1*Math.pow(10, -12)) ) )+ Math.abs( (1/1.8478) - ( 1 / (wc2*(R3+R4)*C3*Math.pow(10, -12)) ) );
 		double error = 0.5*deltaWc + 0.5*deltaQ;
 		return error;
+	}
+	
+	public void updateMean() {
+		for(Filter f : BestFilters) {
+			mean[0] += f.calculateFrequency1();
+			mean[1] += f.calculateFrequency2();
+			mean[2] += f.calculateQ1();
+			mean[3] += f.calculateQ2();
+		}
+		mean[0] /= iteration;
+		mean[1] /= iteration;
+		mean[2] /= iteration;
+		mean[3] /= iteration;
+	}
+	
+	public void updateStDev() {
+		for(Filter f : BestFilters) {
+			StDev[0] += Math.pow( ( f.calculateFrequency1() - mean[0] ) , 2);
+			StDev[1] += Math.pow( ( f.calculateFrequency2() - mean[1] ) , 2);
+			StDev[2] += Math.pow( ( f.calculateQ1() - mean[2] ) , 2);
+			StDev[3] += Math.pow( ( f.calculateQ2() - mean[3] ) , 2);
+		}
+		StDev[0] /= iteration;
+		StDev[1] /= iteration;
+		StDev[2] /= iteration;
+		StDev[3] /= iteration;
+		
+		StDev[0] = Math.sqrt(StDev[0]);
+		StDev[1] = Math.sqrt(StDev[1]);
+		StDev[2] = Math.sqrt(StDev[2]);
+		StDev[3] = Math.sqrt(StDev[3]);
+	}
+	
+	public void updateMES() {
+		for(Filter f : BestFilters) {
+			MES[0] += Math.pow( ( f.calculateFrequency1() -  wc) , 2);
+			MES[1] += Math.pow( ( f.calculateFrequency2() - wc ) , 2);
+			MES[2] += Math.pow( ( f.calculateQ1() - q1 ) , 2);
+			MES[3] += Math.pow( ( f.calculateQ2() - q2 ) , 2);
+		}
+		MES[0] /= iteration ;
+		MES[1] /= iteration ;
+		MES[2] /= iteration ;
+		MES[3] /= iteration ;
 	}
 }
