@@ -132,6 +132,22 @@ public class Filter implements Cloneable, Comparable<Filter> {
 		double error = 0.5*deltaWc + 0.5*deltaQ;
 		return error;
 	}
+	
+	public void print() {
+		System.out.println("R1 = "+ R1);
+		System.out.println("R2 = "+ R2);
+		System.out.println("R3 = "+ R3);
+		System.out.println("R4 = "+ R4);
+		System.out.println("C1 = "+ C1*Math.pow(10, -12));
+		System.out.println("C2 = "+ C2*Math.pow(10, -12));
+		System.out.println("C3 = "+ C3*Math.pow(10, -12));
+		System.out.println("C4 = "+ C4*Math.pow(10, -12));
+		System.out.println("");
+		System.out.println("w1 = " + calculateFrequency1());
+		System.out.println("w2 = " + calculateFrequency2());
+		System.out.println("Q1 = " + calculateQ1());
+		System.out.println("Q2 = " + calculateQ2());
+	}
 
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();

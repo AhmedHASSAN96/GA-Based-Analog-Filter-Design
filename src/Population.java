@@ -11,4 +11,10 @@ public class Population {
 			filterPopulation[i] =  new Filter(10000);
 		}
 	}
+	
+	public void newGeneration(int best) {
+		for (int i = best+1; i < filterPopulation.length; i++ ) {
+			filterPopulation[i] = new Filter(10000);
+		}
+	}
 }
