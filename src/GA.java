@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -5,16 +6,29 @@ public class GA {
 	
 	Population population;
 	Filter bestResult = null;
-	double maxError;
-	int numOfBest = 5000;
-	double wc;
-//	Filter[] bests;
-
-	public GA(int noOfItr) throws CloneNotSupportedException {
-		//initialization & evaluation
-		population = new Population(10000);
+	int numOfBest;
+	int populationSize;
+	
+	double wc = 10000;
+	double q1 = 1/0.7654;
+	double q2 = 1/1.8478;
+	
+	ArrayList<Filter> BestFilters = new ArrayList<>();
+	double[] mean  = new double[4];
+	double[] StDev = new double[4];
+	double[] MES = new double[4];
+	
+	int iteration = 0;
+	
+	public GA(int populationSize, int numOfBest,int iteration) throws CloneNotSupportedException {
+		this.populationSize = populationSize;
+		this.numOfBest = numOfBest;
+		this.iteration = iteration;
 		
-		for (int j = 0;  j < noOfItr  /*bestResult==null ||bestResult.fitness() > 0.01*/; j++) {
+		//initialization & evaluation
+		population = new Population(populationSize);
+		
+		for (int j = 0;  j < iteration /* bestResult==null ||bestResult.fitness() > 0.001*/; j++) {
 					
 			//selection
 			Arrays.sort(population.filterPopulation);
@@ -35,16 +49,16 @@ public class GA {
 			
 			//fitness
 			Arrays.sort(population.filterPopulation);
+			BestFilters.add(population.filterPopulation[0]);
 
+			//getbest
 			if(bestResult.fitness() > population.filterPopulation[0].fitness()) {
 				bestResult = (Filter) population.filterPopulation[0].clone();
 			}
-			//getbest
-
-			System.out.println("itr " + j + ", best error: " + population.filterPopulation[0].fitness() + ", best of all: " + bestResult.fitness());
 			
 			population.newGeneration(numOfBest);
 		}
+		
 	}
 	
 	public void crossOver(Filter f1, Filter f2) {
@@ -156,4 +170,5 @@ public class GA {
 		double error = 0.5*deltaWc + 0.5*deltaQ;
 		return error;
 	}
+	
 }

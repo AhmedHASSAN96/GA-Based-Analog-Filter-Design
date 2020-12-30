@@ -134,6 +134,7 @@ public class Filter implements Cloneable, Comparable<Filter> {
 	}
 	
 	public void print() {
+		System.out.println();
 		System.out.println("R1 = "+ R1);
 		System.out.println("R2 = "+ R2);
 		System.out.println("R3 = "+ R3);
