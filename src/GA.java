@@ -6,8 +6,8 @@ public class GA {
 	
 	Population population;
 	Filter bestResult = null;
-	double maxError;
-	int numOfBest = 500;
+	int numOfBest;
+	int populationSize;
 	
 	double wc = 10000;
 	double q1 = 1/0.7654;
@@ -20,12 +20,15 @@ public class GA {
 	
 	int iteration = 0;
 	
-	public GA(int iteration) throws CloneNotSupportedException {
-		//initialization & evaluation
+	public GA(int populationSize, int numOfBest,int iteration) throws CloneNotSupportedException {
+		this.populationSize = populationSize;
+		this.numOfBest = numOfBest;
 		this.iteration = iteration;
-		population = new Population(1000);
 		
-		for (int j = 0; /* j < iteration*/  bestResult==null ||bestResult.fitness() > 0.001; j++) {
+		//initialization & evaluation
+		population = new Population(populationSize);
+		
+		for (int j = 0;  j < iteration /* bestResult==null ||bestResult.fitness() > 0.001*/; j++) {
 					
 			//selection
 			Arrays.sort(population.filterPopulation);
@@ -52,16 +55,10 @@ public class GA {
 			if(bestResult.fitness() > population.filterPopulation[0].fitness()) {
 				bestResult = (Filter) population.filterPopulation[0].clone();
 			}
-
-
-			System.out.println("itr " + j + ", best error: " + ", best of all: " + bestResult.fitness());
 			
 			population.newGeneration(numOfBest);
 		}
 		
-		updateMean();
-		updateStDev();
-		updateMES();
 	}
 	
 	public void crossOver(Filter f1, Filter f2) {
@@ -174,47 +171,4 @@ public class GA {
 		return error;
 	}
 	
-	public void updateMean() {
-		for(Filter f : BestFilters) {
-			mean[0] += f.calculateFrequency1();
-			mean[1] += f.calculateFrequency2();
-			mean[2] += f.calculateQ1();
-			mean[3] += f.calculateQ2();
-		}
-		mean[0] /= iteration;
-		mean[1] /= iteration;
-		mean[2] /= iteration;
-		mean[3] /= iteration;
-	}
-	
-	public void updateStDev() {
-		for(Filter f : BestFilters) {
-			StDev[0] += Math.pow( ( f.calculateFrequency1() - mean[0] ) , 2);
-			StDev[1] += Math.pow( ( f.calculateFrequency2() - mean[1] ) , 2);
-			StDev[2] += Math.pow( ( f.calculateQ1() - mean[2] ) , 2);
-			StDev[3] += Math.pow( ( f.calculateQ2() - mean[3] ) , 2);
-		}
-		StDev[0] /= iteration;
-		StDev[1] /= iteration;
-		StDev[2] /= iteration;
-		StDev[3] /= iteration;
-		
-		StDev[0] = Math.sqrt(StDev[0]);
-		StDev[1] = Math.sqrt(StDev[1]);
-		StDev[2] = Math.sqrt(StDev[2]);
-		StDev[3] = Math.sqrt(StDev[3]);
-	}
-	
-	public void updateMES() {
-		for(Filter f : BestFilters) {
-			MES[0] += Math.pow( ( f.calculateFrequency1() -  wc) , 2);
-			MES[1] += Math.pow( ( f.calculateFrequency2() - wc ) , 2);
-			MES[2] += Math.pow( ( f.calculateQ1() - q1 ) , 2);
-			MES[3] += Math.pow( ( f.calculateQ2() - q2 ) , 2);
-		}
-		MES[0] /= iteration ;
-		MES[1] /= iteration ;
-		MES[2] /= iteration ;
-		MES[3] /= iteration ;
-	}
 }
