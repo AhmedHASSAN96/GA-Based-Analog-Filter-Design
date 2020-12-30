@@ -15,16 +15,16 @@ public class Test {
 	static int iteration = 0;
 	static int maxIteration = 150;
 	
-	static double maxError = 0.0001;
+	static double maxError = 0.001;
 	
 	public static void main(String[] args) {
 
 		
 		
 		try {
-			for (int i = 0; /*i < maxIteration */ thebest == null || thebest.fitness() > maxError ; i++) {
+			for (int i = 0; i < maxIteration  /*thebest == null || thebest.fitness() > maxError*/ ; i++) {
 				iteration = i;
-				GA ga = new GA(10000,5000,100);
+				GA ga = new GA(1000,500,100);
 				System.out.println("epoch " + i + "--> best: " + ga.bestResult.fitness());
 				BestFilters.add(ga.bestResult);
 
