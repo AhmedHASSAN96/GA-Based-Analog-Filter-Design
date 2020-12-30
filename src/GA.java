@@ -6,15 +6,16 @@ public class GA {
 	Population population;
 	Filter bestResult = null;
 	double maxError;
-	int numOfBest = 200;
+	int numOfBest = 5000;
 	double wc;
 //	Filter[] bests;
 
 	public GA(int noOfItr) throws CloneNotSupportedException {
-		for (int j = 0; /* j < noOfItr */ bestResult==null ||bestResult.fitness() > 0.01; j++) {
-			//initialization & evaluation
-			population = new Population(1000);
+		//initialization & evaluation
+		population = new Population(10000);
 		
+		for (int j = 0;  j < noOfItr  /*bestResult==null ||bestResult.fitness() > 0.01*/; j++) {
+					
 			//selection
 			Arrays.sort(population.filterPopulation);
 
@@ -40,7 +41,9 @@ public class GA {
 			}
 			//getbest
 
-			System.out.println("itr " + j + ", error: " + bestResult.fitnessValue + ", best: " + bestResult.fitness());
+			System.out.println("itr " + j + ", best error: " + population.filterPopulation[0].fitness() + ", best of all: " + bestResult.fitness());
+			
+			population.newGeneration(numOfBest);
 		}
 	}
 	
